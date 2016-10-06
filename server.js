@@ -8,70 +8,54 @@ const server = net.createServer((request) => {
   request.on('data', (data) => {
     let filePath;
     let fileType;
+    let status;
+    let statusString;
+    let fileSize;
     data = data.toString();
     data = data.split('/');
 
     data = data[1].split(' ');
-    console.log(data);
     if(data[0] === 'css'){
       filePath = './css/style.css';
       fileType = 'css';
+      status = '200';
+      statusString = ' OK';
     } else  if(data[0] === 'hydrogen.html' || data[0] === 'hydrogen'){
       filePath = 'hydrogen.html';
       fileType = 'html';
+      status = '200';
+      statusString = ' OK';
     } else if(data[0] === 'helium.html' || data[0] === 'helium'){
       filePath = 'helium.html';
       fileType = 'html';
+      status = '200';
+      statusString = ' OK';
     } else if(data[0] === ''){
       filePath = 'index.html';
       fileType = 'html';
+      status = '200';
+      statusString = ' OK';
     } else {
       filePath = '404.html';
       fileType = 'html';
+      status = '404';
+      statusString = ' Not Found';
     }
-
-
-    // switch (data[0]){
-    //   case 'css':
-    //     filePath = './css/style.css';
-    //     fileType = 'css';
-    //     break;
-    //   case 'hydrogen.html' || 'hydrogen':
-    //     filePath = 'hydrogen.html';
-    //     fileType = 'html';
-    //     break;
-    //   case 'helium.html' || 'helium':
-    //     filePath = 'helium.html';
-    //     fileType = 'html';
-    //     break;
-    //   case '':
-    //     filePath = 'index.html';
-    //     fileType = 'html';
-    //     break;
-    //   default:
-    //     filePath = '404.html';
-    //     fileType = 'html';
-
-    // }
-
-
     fs.readFile(filePath, (err, file) => {
       if (err){
         console.error(err);
       } else {
-        request.write('HTTP/1.1 200 OK');
+        fileSize = file.length;
+        request.write('HTTP/1.1 ' + status + statusString);
         request.write('\n');
         request.write('Content-Type: text/' + fileType + '; charset=utf-8 \n');
-        request.write('Status: 200 \n');
+        request.write('Status: ' + status +'\n');
+        request.write('Content-Length: '+ fileSize + '\n');
         request.write('\n');
         request.write(file.toString());
       }
         request.end();
     });
-
-    //console.log(htmlData);
-    //request.write(file.toString());
-    //request.write('<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>HTTP-Socket-Server</title></head><body><h1>HTTP-Socket-Server</h1></body></html>');
 
   });
 
